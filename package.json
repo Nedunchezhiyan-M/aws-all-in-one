@@ -1,0 +1,122 @@
+{
+  "name": "aws-all-in-one",
+  "version": "1.0.0",
+  "description": "A comprehensive toolkit for AWS operations including multi-region clients, IAM policy builder, assume role, S3 deployment, KMS utilities, messaging, and Step Functions helpers",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./assume-role": {
+      "import": "./dist/assume-role.mjs",
+      "require": "./dist/assume-role.js",
+      "types": "./dist/assume-role.d.ts"
+    },
+    "./multi-region": {
+      "import": "./dist/multi-region.mjs",
+      "require": "./dist/multi-region.js",
+      "types": "./dist/multi-region.d.ts"
+    },
+    "./policy-builder": {
+      "import": "./dist/policy-builder.mjs",
+      "require": "./dist/policy-builder.js",
+      "types": "./dist/policy-builder.d.ts"
+    },
+    "./s3-deployer": {
+      "import": "./dist/s3-deployer.mjs",
+      "require": "./dist/s3-deployer.js",
+      "types": "./dist/s3-deployer.d.ts"
+    },
+    "./s3-utils": {
+      "import": "./dist/s3-utils.mjs",
+      "require": "./dist/s3-utils.js",
+      "types": "./dist/s3-utils.d.ts"
+    },
+    "./kms-utils": {
+      "import": "./dist/kms-utils.mjs",
+      "require": "./dist/kms-utils.js",
+      "types": "./dist/kms-utils.d.ts"
+    },
+    "./messaging": {
+      "import": "./dist/messaging.mjs",
+      "require": "./dist/messaging.js",
+      "types": "./dist/messaging.d.ts"
+    },
+    "./step-functions": {
+      "import": "./dist/step-functions.mjs",
+      "require": "./dist/step-functions.js",
+      "types": "./dist/step-functions.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "aws",
+    "toolbox",
+    "multi-region",
+    "assume-role",
+    "cross-account",
+    "iam-policy",
+    "s3-deployment",
+    "kms",
+    "encryption",
+    "sns",
+    "sqs",
+    "eventbridge",
+    "step-functions",
+    "typescript",
+    "utility"
+  ],
+  "author": "Nedunchezhiyan M <nedunchezhiyancse@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/aws-all-in-one.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/aws-all-in-one/issues"
+  },
+  "homepage": "https://github.com/yourusername/aws-all-in-one#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cloudfront": "^3.0.0",
+    "@aws-sdk/client-eventbridge": "^3.0.0",
+    "@aws-sdk/client-iam": "^3.873.0",
+    "@aws-sdk/client-kms": "^3.0.0",
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@aws-sdk/client-sfn": "^3.0.0",
+    "@aws-sdk/client-sns": "^3.0.0",
+    "@aws-sdk/client-sqs": "^3.0.0",
+    "@aws-sdk/client-sts": "^3.0.0",
+    "@aws-sdk/lib-storage": "^3.0.0",
+    "@aws-sdk/s3-request-presigner": "^3.0.0",
+    "mime-types": "^2.1.35"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/mime-types": "^2.1.4",
+    "rimraf": "^5.0.0",
+    "tsup": "^7.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-cloudfront": "^3.0.0",
+    "@aws-sdk/client-eventbridge": "^3.0.0",
+    "@aws-sdk/client-kms": "^3.0.0",
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@aws-sdk/client-sfn": "^3.0.0",
+    "@aws-sdk/client-sns": "^3.0.0",
+    "@aws-sdk/client-sqs": "^3.0.0",
+    "@aws-sdk/client-sts": "^3.0.0",
+    "@aws-sdk/lib-storage": "^3.0.0"
+  }
+}

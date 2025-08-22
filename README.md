@@ -1,0 +1,367 @@
+# 🚀 AWS Toolbox
+
+[![npm version](https://badge.fury.io/js/aws-all-in-one.svg)](https://badge.fury.io/js/aws-all-in-one)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/node/v/aws-all-in-one)](https://nodejs.org/)
+[![Coverage](https://img.shields.io/codecov/c/github/Nedunchezhiyan-M/aws-all-in-one)](https://codecov.io/gh/Nedunchezhiyan-M/aws-all-in-one)
+
+A comprehensive toolkit for AWS operations including multi-region clients, IAM policy builder, assume role, S3 deployment, KMS utilities, messaging, and Step Functions helpers. Built with AWS SDK v3 and designed for modern Node.js applications.
+
+## ✨ Features
+
+- 🔐 **Multi-Region Management** - Automatic failover and region management for AWS services
+- 🏗️ **IAM Policy Builder** - Programmatically build least-privilege IAM policies
+- 🔑 **Cross-Account AssumeRole** - Secure utility for AWS cross-account role assumption
+- 📦 **S3 Static Website Deployer** - Deploy static sites with CloudFront invalidation
+- 🗂️ **S3 Utilities** - File uploads, pre-signed URLs, notifications setup, and IAM management
+- 🔒 **KMS Utilities** - Simplified encryption/decryption operations
+- 📨 **Unified Messaging** - Integrate EventBridge, SNS, and SQS with retries and dead-letter handling
+- ⚡ **Step Functions Helper** - Modern wrapper for invoking and monitoring Step Functions
+- 🪶 **Lightweight** - Minimal package size with no unnecessary dependencies
+- 🚀 **Modern** - Written in TypeScript, transpiles to ESM + CommonJS
+- 🧪 **Testable** - Fully tested with Jest and mocked AWS SDK
+
+## 📦 Installation
+
+```bash
+npm install aws-
+```
+
+```bash
+yarn add aws-all-in-one
+```
+
+```bash
+pnpm add aws-all-in-one
+```
+
+## 🛠️ Usage
+
+### 1. Multi-Region AWS Client Manager
+
+**Use Case**: Automatically handle AWS service failures across multiple regions with automatic failover.
+
+```typescript
+import { createDefaultMultiRegionManager } from 'aws-all-in-one/multi-region';
+
+const manager = createDefaultMultiRegionManager({
+  accessKeyId: 'YOUR_ACCESS_KEY',
+  secretAccessKey: 'YOUR_SECRET_KEY'
+});
+
+// Execute with automatic failover
+const result = await manager.executeWithFailover(
+  async (client) => {
+    // Your AWS operation here
+    return await someOperation(client);
+  },
+  {
+    onFailover: (fromRegion, toRegion, error) => {
+      console.log(`Failed over from ${fromRegion} to ${toRegion}:`, error);
+    }
+  }
+);
+```
+
+### 2. IAM Policy Builder
+
+**Use Case**: Programmatically build least-privilege IAM policies with a fluent API.
+
+```typescript
+import { PolicyBuilder, PolicyTemplates } from 'aws-all-in-one/policy-builder';
+
+// Build custom policy
+const policy = new PolicyBuilder()
+  .allow(['s3:GetObject', 's3:PutObject'], 'arn:aws:s3:::my-bucket/*')
+  .deny(['s3:DeleteObject'], 'arn:aws:s3:::my-bucket/*')
+  .withCondition('Allow', 's3:GetObject', 'arn:aws:s3:::my-bucket/*', {
+    StringEquals: { 'aws:PrincipalTag/Environment': 'Production' }
+  })
+  .build();
+
+// Use predefined templates
+const s3Policy = PolicyTemplates.s3ReadWrite('my-bucket');
+const lambdaPolicy = PolicyTemplates.lambdaInvoke('my-function');
+```
+
+### 3. Cross-Account AssumeRole
+
+**Use Case**: Securely assume AWS roles across different accounts with comprehensive validation.
+
+```typescript
+import { assumeRole } from 'aws-all-in-one/assume-role';
+
+const credentials = await assumeRole({
+  accountId: '123456789012',
+  roleName: 'CrossAccountRole',
+  sessionName: 'mySession',
+  durationSeconds: 3600
+});
+```
+
+### 4. S3 Static Website Deployer
+
+**Use Case**: Deploy static websites to S3 with CloudFront invalidation and presigned URLs.
+
+```typescript
+import { createS3Deployer } from 'aws-all-in-one/s3-deployer';
+
+const deployer = createS3Deployer({
+  bucketName: 'my-website-bucket',
+  sourcePath: './dist',
+  cloudFrontDistributionId: 'E1234567890ABC'
+});
+
+const result = await deployer.deploy();
+```
+
+### 5. S3 Utilities
+
+**Use Case**: Comprehensive S3 operations including file uploads, notifications setup, and IAM management.
+
+```typescript
+import { createS3Utils, S3Helpers } from 'aws-all-in-one/s3-utils';
+
+const s3Utils = createS3Utils({
+  region: 'us-east-1',
+  credentials: {
+    accessKeyId: 'YOUR_ACCESS_KEY',
+    secretAccessKey: 'YOUR_SECRET_KEY'
+  }
+});
+
+// Upload file with multipart support
+const result = await s3Utils.uploadFile(file, s3Details, {
+  isPublic: true,
+  customPrefix: 'public-images'
+});
+
+// Generate pre-signed URL
+const url = await s3Utils.getPreSignedUrl('file-key', s3Details, 7200);
+
+// Setup complete S3 notifications (SNS + IAM + bucket config)
+const setup = await s3Utils.setupS3Notifications(s3Details);
+
+// Get IAM username
+const username = await s3Utils.getIamUserName(s3Details);
+
+// Helper utilities
+const uniqueName = S3Helpers.generateUniqueFilename('document.pdf', 'uploads');
+const isValidBucket = S3Helpers.validateBucketName('my-bucket-123');
+const fileSize = S3Helpers.formatFileSize(1048576); // "1 MB"
+```
+
+### 6. KMS Encryption/Decryption
+
+**Use Case**: Simplified encryption/decryption operations with encryption contexts and data key generation.
+
+```typescript
+import { createKMSUtils, EncryptionContexts } from 'aws-all-in-one/kms-utils';
+
+const kms = createKMSUtils({
+  keyId: 'arn:aws:kms:us-east-1:123456789012:key/abc123'
+});
+
+// Encrypt/Decrypt data
+const encrypted = await kms.encrypt('sensitive data');
+const decrypted = await kms.decrypt(encrypted.encryptedData);
+```
+
+### 7. Unified Messaging
+
+**Use Case**: Integrate EventBridge, SNS, and SQS with retries, dead-letter handling, and unified interfaces.
+
+```typescript
+import { createMessagingUtils } from 'aws-all-in-one/messaging';
+
+const messaging = createMessagingUtils({
+  region: 'us-east-1',
+  deadLetterQueueUrl: 'https://sqs.us-east-1.amazonaws.com/123456789012/dlq'
+});
+
+// Publish to SNS, SQS, or EventBridge
+await messaging.publishToSNS('topic-arn', { message: 'Hello World' });
+await messaging.sendToSQS('queue-url', { data: 'message data' });
+```
+
+### 8. Step Functions Helper
+
+**Use Case**: Modern wrapper for invoking and monitoring Step Functions with retry patterns and execution management.
+
+```typescript
+import { createStepFunctionsHelper, ExecutionPatterns } from 'aws-all-in-one/step-functions';
+
+const sfn = createStepFunctionsHelper({
+  stateMachineArn: 'arn:aws:states:us-east-1:123456789012:stateMachine:MyWorkflow'
+});
+
+// Start execution and wait for completion
+const result = await sfn.executeAndWait('my-execution', { input: 'data' });
+
+// Use retry pattern
+const output = await ExecutionPatterns.retryOnFailure(sfn, 'my-execution', { input: 'data' }, 3);
+```
+
+## ⚡ Use Cases
+
+### Multi-Account Infrastructure Management
+**Scenario**: Deploy applications across multiple AWS accounts using cross-account role assumption and S3 deployment.
+**Functions**: `assumeRole()`, `createS3Deployer()`
+
+### Secure Data Processing Pipeline
+**Scenario**: Process encrypted messages with KMS, trigger Step Functions workflows, and handle failures gracefully.
+**Functions**: `createKMSUtils()`, `createMessagingUtils()`, `createStepFunctionsHelper()`
+
+### High-Availability AWS Operations
+**Scenario**: Ensure AWS operations continue working even if one region fails using automatic failover.
+**Functions**: `createDefaultMultiRegionManager()`
+
+### IAM Policy Automation
+**Scenario**: Generate least-privilege IAM policies programmatically for different environments and services.
+**Functions**: `PolicyBuilder`, `PolicyTemplates`
+
+## 🔐 Security Notes
+
+### Best Practices
+
+1. **Never log credentials** - All utilities are designed to never expose sensitive information
+2. **Use external IDs** - Always provide external IDs when assuming roles in third-party accounts
+3. **Apply least privilege** - Use the policy builder to create minimal required permissions
+4. **Enable encryption** - Use KMS utilities for all sensitive data
+5. **Monitor executions** - Use Step Functions helper to track workflow execution
+
+## 📋 API Reference
+
+### Multi-Region Manager
+
+```typescript
+interface MultiRegionConfig {
+  regions: RegionConfig[];
+  defaultRegion?: string;
+  enableFailover?: boolean;
+  maxRetries?: number;
+  retryDelay?: number;
+}
+
+class MultiRegionManager {
+  getClient<T>(region: string): T | undefined;
+  executeWithFailover<T, R>(operation: (client: T) => Promise<R>): Promise<R>;
+  healthCheck<T>(operation: (client: T) => Promise<boolean>): Promise<Map<string, boolean>>;
+}
+```
+
+### Policy Builder
+
+```typescript
+class PolicyBuilder {
+  allow(actions: string | string[], resources: string | string[], sid?: string): this;
+  deny(actions: string | string[], resources: string | string[], sid?: string): this;
+  withCondition(effect: 'Allow' | 'Deny', actions: string | string[], resources: string | string[], condition: Record<string, any>): this;
+  build(): PolicyBuilder;
+  toJSON(): string;
+}
+```
+
+### S3 Deployer
+
+```typescript
+interface S3DeployerOptions {
+  bucketName: string;
+  sourcePath: string;
+  region?: string;
+  cloudFrontDistributionId?: string;
+  cacheControl?: string;
+  acl?: string;
+}
+
+class S3Deployer {
+  deploy(): Promise<DeployResult>;
+  generatePresignedUrl(key: string, expiresIn?: number): Promise<string>;
+}
+```
+
+### S3 Utils
+
+```typescript
+interface S3Details {
+  bucketName: string;
+  bucketRegion: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+}
+
+interface S3NotificationSetup {
+  topicArn: string;
+  subscriptionArn: string;
+  response: any;
+}
+
+class S3Utils {
+  uploadFile(file: { buffer: Buffer; originalname: string; mimetype: string }, s3Details: S3Details, options?: UploadOptions): Promise<any>;
+  getPreSignedUrl(key: string, s3Details: S3Details, expiresIn?: number): Promise<string>;
+  setupS3Notifications(s3Details: S3Details, logger?: any): Promise<S3NotificationSetup>;
+  getIamUserName(s3Details: S3Details): Promise<string>;
+  getSNSSubscriptionAttributes(subscriptionArn: string, s3Details: S3Details, logger?: any): Promise<any>;
+  getSubscriptionArnByEndpoint(topicArn: string, s3Details: S3Details, endpoint: string, logger?: any): Promise<string | undefined>;
+}
+
+// Helper functions
+const S3Helpers = {
+  generateUniqueFilename(originalName: string, prefix?: string): string;
+  validateBucketName(bucketName: string): boolean;
+  formatFileSize(bytes: number): string;
+};
+```
+
+### KMS Utils
+
+```typescript
+class KMSUtils {
+  encrypt(data: string | Buffer, encryptionContext?: Record<string, string>): Promise<EncryptionResult>;
+  decrypt(encryptedData: Buffer, encryptionContext?: Record<string, string>): Promise<DecryptionResult>;
+  generateDataKey(keySpec?: 'AES_128' | 'AES_256'): Promise<DataKeyResult>;
+}
+```
+
+### Messaging Utils
+
+```typescript
+class MessagingUtils {
+  publishToSNS(topicArn: string, message: string | object, subject?: string): Promise<PublishResult>;
+  sendToSQS(queueUrl: string, message: string | object, attributes?: Record<string, string>): Promise<PublishResult>;
+  putEvent(eventBusName: string, source: string, detailType: string, detail: any): Promise<PublishResult>;
+  processSQSMessages<T>(queueUrl: string, handler: MessageHandler<T>): Promise<void>;
+}
+```
+
+### Step Functions Helper
+
+```typescript
+class StepFunctionsHelper {
+  startExecution(name: string, input: ExecutionInput): Promise<ExecutionResult>;
+  executeAndWait(name: string, input: ExecutionInput): Promise<ExecutionStatus>;
+  getExecutionStatus(executionArn: string): Promise<ExecutionStatus>;
+  listExecutions(options?: { maxResults?: number; statusFilter?: string }): Promise<ExecutionStatus[]>;
+}
+```
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [AWS SDK v3](https://github.com/aws/aws-sdk-js-v3)
+- Tested with [Jest](https://jestjs.io/)
+- Built with [tsup](https://github.com/egoist/tsup)
+- TypeScript support and modern ES modules
+
+## 📞 Support
+
+- 📧 **Email**: nedunchezhiyancse@gmail.com
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Nedunchezhiyan-M/aws-all-in-one/issues)
+- 📖 **Documentation**: [GitHub Wiki](https://github.com/Nedunchezhiyan-M/aws-all-in-one/wiki)
+
+---
+
+**Made with ❤️ for the AWS community**
