@@ -33,5 +33,4 @@ export default defineConfig({
     '@aws-sdk/lib-storage',
     'mime-types'
   ],
-  onSuccess: 'npm run test',
 });
