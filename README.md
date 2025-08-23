@@ -19,6 +19,9 @@ A comprehensive toolkit for AWS operations including multi-region clients, IAM p
 - ⚡ **Step Functions Helper** - Modern wrapper for invoking and monitoring Step Functions
 - 💰 **Cost Manager** - Comprehensive cost analysis, forecasting, and optimization recommendations
 - 🗄️ **DynamoDB Utilities** - Cost-optimized operations with batch processing and performance analysis
+- 🚀 **Lambda Manager** - Complete Lambda function lifecycle management with best practices
+- 🚀 **Lambda Deployer** - Production-ready deployment strategies (blue-green, canary) with CloudWatch scheduling and retry logic
+- 🔒 **Lambda Security** - Automated security scanning, IAM role generation, and compliance
 - 🪶 **Lightweight** - Minimal package size with no unnecessary dependencies
 - 🚀 **Modern** - Written in TypeScript, transpiles to ESM + CommonJS
 - 🧪 **Testable** - Fully tested with Jest and mocked AWS SDK
@@ -94,7 +97,7 @@ const lambdaPolicy = PolicyTemplates.lambdaInvoke('my-function');
 import { assumeRole } from 'aws-all-in-one/assume-role';
 
 const credentials = await assumeRole({
-  accountId: '123456789012',
+  accountId: 'YOUR_ACCOUNT_ID', // Replace with your actual AWS account ID
   roleName: 'CrossAccountRole',
   sessionName: 'mySession',
   durationSeconds: 3600
@@ -226,7 +229,7 @@ const fileSize = S3Helpers.formatFileSize(1048576); // "1 MB"
 import { createKMSUtils, EncryptionContexts } from 'aws-all-in-one/kms-utils';
 
 const kms = createKMSUtils({
-  keyId: 'arn:aws:kms:us-east-1:123456789012:key/abc123'
+  keyId: 'arn:aws:kms:us-east-1:YOUR_ACCOUNT_ID:key/YOUR_KEY_ID'
 });
 
 // Encrypt/Decrypt data
@@ -243,7 +246,7 @@ import { createMessagingUtils } from 'aws-all-in-one/messaging';
 
 const messaging = createMessagingUtils({
   region: 'us-east-1',
-  deadLetterQueueUrl: 'https://sqs.us-east-1.amazonaws.com/123456789012/dlq'
+  deadLetterQueueUrl: 'https://sqs.us-east-1.amazonaws.com/YOUR_ACCOUNT_ID/dlq'
 });
 
 // Publish to SNS, SQS, or EventBridge
@@ -251,7 +254,45 @@ await messaging.publishToSNS('topic-arn', { message: 'Hello World' });
 await messaging.sendToSQS('queue-url', { data: 'message data' });
 ```
 
-### 8. Step Functions Helper
+### 8. Lambda Deployment (Advanced)
+
+**Use Case**: Deploy Lambda functions with blue-green and canary strategies using production-ready deployment patterns.
+
+```typescript
+import { LambdaDeployer } from 'aws-all-in-one/lambda-deployer';
+
+// Option 1: Use with default configuration
+const deployer = new LambdaDeployer();
+
+// Option 2: Configure with your own AWS details
+const deployer = new LambdaDeployer({
+  region: 'us-west-2',
+  accountId: '987654321098' // Your AWS account ID
+});
+
+// Blue-green deployment
+const blueGreenResult = await deployer.blueGreenDeploy({
+  functionName: 'my-function',
+  code: Buffer.from('updated-function-code'),
+  description: 'Production deployment v2.0'
+});
+
+// Canary deployment with traffic shifting
+const canaryResult = await deployer.canaryDeploy({
+  functionName: 'my-function',
+  trafficPercent: 10,
+  duration: 30, // 30 minutes
+  evaluationCriteria: {
+    errorRate: 0.01,
+    latency: 1000
+  }
+}, Buffer.from('canary-function-code'));
+
+// Rollback if needed
+await deployer.rollbackToVersion('my-function', '1');
+```
+
+### 9. Step Functions Helper
 
 **Use Case**: Modern wrapper for invoking and monitoring Step Functions with retry patterns and execution management.
 
@@ -259,7 +300,7 @@ await messaging.sendToSQS('queue-url', { data: 'message data' });
 import { createStepFunctionsHelper, ExecutionPatterns } from 'aws-all-in-one/step-functions';
 
 const sfn = createStepFunctionsHelper({
-  stateMachineArn: 'arn:aws:states:us-east-1:123456789012:stateMachine:MyWorkflow'
+  stateMachineArn: 'arn:aws:states:us-east-1:YOUR_ACCOUNT_ID:stateMachine:MyWorkflow'
 });
 
 // Start execution and wait for completion
@@ -304,6 +345,8 @@ const output = await ExecutionPatterns.retryOnFailure(sfn, 'my-execution', { inp
 3. **Apply least privilege** - Use the policy builder to create minimal required permissions
 4. **Enable encryption** - Use KMS utilities for all sensitive data
 5. **Monitor executions** - Use Step Functions helper to track workflow execution
+6. **Configure AWS details** - Provide your own region and account ID when using Lambda Deployer
+7. **Validate inputs** - All Lambda deployment methods now validate inputs for security
 
 ## 📋 API Reference
 

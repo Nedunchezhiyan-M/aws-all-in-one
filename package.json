@@ -1,6 +1,6 @@
 {
   "name": "aws-all-in-one",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "A comprehensive toolkit for AWS operations including multi-region clients, IAM policy builder, assume role, S3 deployment, KMS utilities, messaging, Step Functions helpers, cost management, and DynamoDB utilities",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -60,6 +60,21 @@
       "import": "./dist/dynamodb-utils.mjs",
       "require": "./dist/dynamodb-utils.js",
       "types": "./dist/dynamodb-utils.d.ts"
+    },
+    "./lambda-manager": {
+      "import": "./dist/lambda-manager.mjs",
+      "require": "./dist/lambda-manager.js",
+      "types": "./dist/lambda-manager.d.ts"
+    },
+    "./lambda-deployer": {
+      "import": "./dist/lambda-deployer.mjs",
+      "require": "./dist/lambda-deployer.js",
+      "types": "./dist/lambda-deployer.d.ts"
+    },
+    "./lambda-security": {
+      "import": "./dist/lambda-security.mjs",
+      "require": "./dist/lambda-security.js",
+      "types": "./dist/lambda-security.d.ts"
     }
   },
   "scripts": {
@@ -107,6 +122,7 @@
     "@aws-sdk/client-dynamodb": "^3.0.0",
     "@aws-sdk/client-eventbridge": "^3.0.0",
     "@aws-sdk/client-iam": "^3.873.0",
+    "@aws-sdk/client-lambda": "^3.0.0",
     "@aws-sdk/client-kms": "^3.0.0",
     "@aws-sdk/client-s3": "^3.0.0",
     "@aws-sdk/client-sfn": "^3.0.0",

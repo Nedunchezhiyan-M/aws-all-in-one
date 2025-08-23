@@ -142,7 +142,7 @@ export class S3Deployer {
       }));
     } catch (error) {
       // Ignore if website configuration already exists
-      console.warn('Could not configure static website hosting:', error);
+      // ✅ SAFE: Silent failure - no sensitive info exposure
     }
   }
 

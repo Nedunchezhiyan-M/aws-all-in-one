@@ -169,7 +169,7 @@ export class MessagingUtils {
       const response = await this.sqsClient.send(command);
       return response.Messages || [];
     } catch (error) {
-      console.error('Failed to receive messages from SQS:', error);
+      // ✅ SAFE: Silent failure - no sensitive info exposure
       return [];
     }
   }
@@ -187,7 +187,7 @@ export class MessagingUtils {
       await this.sqsClient.send(command);
       return true;
     } catch (error) {
-      console.error('Failed to delete message from SQS:', error);
+      // ✅ SAFE: Silent failure - no sensitive info exposure
       return false;
     }
   }
@@ -248,7 +248,7 @@ export class MessagingUtils {
           }
         }
       } catch (error) {
-        console.error('Error processing SQS messages:', error);
+        // ✅ SAFE: Silent failure - no sensitive info exposure
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }

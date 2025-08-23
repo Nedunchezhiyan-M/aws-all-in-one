@@ -6,6 +6,9 @@ export * from './s3-utils';
 export * from './kms-utils';
 export * from './messaging';
 export * from './step-functions';
+export * from './lambda-manager';
+export * from './lambda-deployer';
+export * from './lambda-security';
 
 export const getCostManager = async () => {
   const { CostManager } = await import('./cost-manager');
@@ -15,6 +18,21 @@ export const getCostManager = async () => {
 export const getDynamoDBUtils = async () => {
   const { DynamoDBUtils } = await import('./dynamodb-utils');
   return DynamoDBUtils;
+};
+
+export const getLambdaManager = async () => {
+  const { LambdaManager } = await import('./lambda-manager');
+  return LambdaManager;
+};
+
+export const getLambdaDeployer = async () => {
+  const { LambdaDeployer } = await import('./lambda-deployer');
+  return LambdaDeployer;
+};
+
+export const getLambdaSecurity = async () => {
+  const { LambdaSecurity } = await import('./lambda-security');
+  return LambdaSecurity;
 };
 
 export type { AssumeRoleOptions, AssumeRoleResult } from './assume-role';
@@ -44,3 +62,22 @@ export type {
   TableMetrics, 
   CostAnalysis 
 } from './dynamodb-utils';
+
+export type {
+  LambdaFunctionConfig,
+  FunctionInfo,
+  InvocationResult
+} from './lambda-manager';
+
+export type {
+  DeploymentConfig,
+  DeploymentResult,
+  CanaryConfig
+} from './lambda-deployer';
+
+export type {
+  SecurityPolicy,
+  SecurityReport,
+  SecurityFinding,
+  IAMRoleConfig
+} from './lambda-security';

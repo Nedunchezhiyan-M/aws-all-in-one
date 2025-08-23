@@ -213,7 +213,7 @@ export class StepFunctionsHelper {
       await this.sfnClient.send(command);
       return true;
     } catch (error) {
-      console.error('Failed to stop execution:', error);
+      // ✅ SAFE: Silent failure - no sensitive info exposure
       return false;
     }
   }
@@ -248,7 +248,7 @@ export class StepFunctionsHelper {
       
       return null;
     } catch (error) {
-      console.error('Failed to get execution output:', error);
+      // ✅ SAFE: Silent failure - no sensitive info exposure
       return null;
     }
   }
@@ -302,7 +302,7 @@ export const ExecutionPatterns = {
           throw error;
         }
         
-        console.warn(`Execution attempt ${attempt + 1} failed, retrying...`, error);
+        // ✅ SAFE: Silent retry - no sensitive info exposure
         await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
       }
     }

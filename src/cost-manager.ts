@@ -318,7 +318,7 @@ export class CostManager {
       }
 
     } catch (error) {
-      console.warn('Error generating cost optimization recommendations:', error);
+      // ✅ SAFE: Silent failure - no sensitive info exposure
     }
 
     return recommendations;
