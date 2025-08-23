@@ -138,7 +138,7 @@
     "@types/node": "^18.0.0",
     "@types/mime-types": "^2.1.4",
     "rimraf": "^5.0.0",
-    "tsup": "^7.0.0",
+    "tsup": "^8.5.0",
     "typescript": "^5.0.0"
   },
   "peerDependencies": {
