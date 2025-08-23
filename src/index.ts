@@ -1,4 +1,3 @@
-// Main AWS Toolbox exports
 export * from './assume-role';
 export * from './multi-region';
 export * from './policy-builder';
@@ -7,10 +6,17 @@ export * from './s3-utils';
 export * from './kms-utils';
 export * from './messaging';
 export * from './step-functions';
-export * from './cost-manager';
-export * from './dynamodb-utils';
 
-// Re-export commonly used types
+export const getCostManager = async () => {
+  const { CostManager } = await import('./cost-manager');
+  return CostManager;
+};
+
+export const getDynamoDBUtils = async () => {
+  const { DynamoDBUtils } = await import('./dynamodb-utils');
+  return DynamoDBUtils;
+};
+
 export type { AssumeRoleOptions, AssumeRoleResult } from './assume-role';
 export type { MultiRegionConfig, RegionConfig } from './multi-region';
 export type { PolicyDocument, PolicyStatement } from './policy-builder';
@@ -19,6 +25,7 @@ export type { S3Details, S3NotificationSetup, UploadOptions, S3UtilsOptions } fr
 export type { KMSOptions, EncryptionResult } from './kms-utils';
 export type { MessageOptions, PublishResult } from './messaging';
 export type { StepFunctionOptions, ExecutionResult } from './step-functions';
+
 export type { 
   CostAnalysisOptions, 
   CostData, 
@@ -27,6 +34,7 @@ export type {
   ReservationUtilization, 
   CostOptimizationRecommendation 
 } from './cost-manager';
+
 export type { 
   DynamoDBOptions, 
   BatchOperationOptions, 

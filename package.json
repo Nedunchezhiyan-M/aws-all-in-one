@@ -1,6 +1,6 @@
 {
   "name": "aws-all-in-one",
-  "version": "2.0.3",
+  "version": "2.1.1",
   "description": "A comprehensive toolkit for AWS operations including multi-region clients, IAM policy builder, assume role, S3 deployment, KMS utilities, messaging, Step Functions helpers, cost management, and DynamoDB utilities",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -87,16 +87,16 @@
     "typescript",
     "utility"
   ],
-  "author": "Nedunchezhiyan M <nedunchezhiyancse@gmail.com>",
+  "author": "nedunchezhiyancse@gmail.com",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/aws-all-in-one.git"
+    "url": "https://github.com/Nedunchezhiyan-M/aws-all-in-one.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/aws-all-in-one/issues"
+    "url": "https://github.com/Nedunchezhiyan-M/aws-all-in-one/issues"
   },
-  "homepage": "https://github.com/yourusername/aws-all-in-one#readme",
+  "homepage": "https://github.com/Nedunchezhiyan-M/aws-all-in-one#readme",
   "engines": {
     "node": ">=16.0.0"
   },
