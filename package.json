@@ -1,7 +1,7 @@
 {
   "name": "aws-all-in-one",
-  "version": "1.0.0",
-  "description": "A comprehensive toolkit for AWS operations including multi-region clients, IAM policy builder, assume role, S3 deployment, KMS utilities, messaging, and Step Functions helpers",
+  "version": "2.0.3",
+  "description": "A comprehensive toolkit for AWS operations including multi-region clients, IAM policy builder, assume role, S3 deployment, KMS utilities, messaging, Step Functions helpers, cost management, and DynamoDB utilities",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -50,6 +50,16 @@
       "import": "./dist/step-functions.mjs",
       "require": "./dist/step-functions.js",
       "types": "./dist/step-functions.d.ts"
+    },
+    "./cost-manager": {
+      "import": "./dist/cost-manager.mjs",
+      "require": "./dist/cost-manager.js",
+      "types": "./dist/cost-manager.d.ts"
+    },
+    "./dynamodb-utils": {
+      "import": "./dist/dynamodb-utils.mjs",
+      "require": "./dist/dynamodb-utils.js",
+      "types": "./dist/dynamodb-utils.d.ts"
     }
   },
   "scripts": {
@@ -71,6 +81,9 @@
     "sqs",
     "eventbridge",
     "step-functions",
+    "cost-management",
+    "dynamodb",
+    "cost-optimization",
     "typescript",
     "utility"
   ],
@@ -89,6 +102,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-cloudfront": "^3.0.0",
+    "@aws-sdk/client-cloudwatch": "^3.0.0",
+    "@aws-sdk/client-cost-explorer": "^3.0.0",
+    "@aws-sdk/client-dynamodb": "^3.0.0",
     "@aws-sdk/client-eventbridge": "^3.0.0",
     "@aws-sdk/client-iam": "^3.873.0",
     "@aws-sdk/client-kms": "^3.0.0",
@@ -99,6 +115,7 @@
     "@aws-sdk/client-sts": "^3.0.0",
     "@aws-sdk/lib-storage": "^3.0.0",
     "@aws-sdk/s3-request-presigner": "^3.0.0",
+    "@aws-sdk/util-dynamodb": "^3.0.0",
     "mime-types": "^2.1.35"
   },
   "devDependencies": {

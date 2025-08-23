@@ -86,3 +86,6 @@ pids/
 
 # TernJS port file
 .tern-port
+
+.cursor/
+

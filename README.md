@@ -1,4 +1,4 @@
-# 🚀 AWS Toolbox
+# 🚀 AWS All In One
 
 [![npm version](https://badge.fury.io/js/aws-all-in-one.svg)](https://badge.fury.io/js/aws-all-in-one)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -17,6 +17,8 @@ A comprehensive toolkit for AWS operations including multi-region clients, IAM p
 - 🔒 **KMS Utilities** - Simplified encryption/decryption operations
 - 📨 **Unified Messaging** - Integrate EventBridge, SNS, and SQS with retries and dead-letter handling
 - ⚡ **Step Functions Helper** - Modern wrapper for invoking and monitoring Step Functions
+- 💰 **Cost Manager** - Comprehensive cost analysis, forecasting, and optimization recommendations
+- 🗄️ **DynamoDB Utilities** - Cost-optimized operations with batch processing and performance analysis
 - 🪶 **Lightweight** - Minimal package size with no unnecessary dependencies
 - 🚀 **Modern** - Written in TypeScript, transpiles to ESM + CommonJS
 - 🧪 **Testable** - Fully tested with Jest and mocked AWS SDK
@@ -145,6 +147,71 @@ const setup = await s3Utils.setupS3Notifications(s3Details);
 // Get IAM username
 const username = await s3Utils.getIamUserName(s3Details);
 
+### 6. Cost Manager
+
+**Use Case**: Comprehensive cost analysis, forecasting, and optimization recommendations for AWS services.
+
+```typescript
+import { costManager } from 'aws-all-in-one/cost-manager';
+
+// Get cost and usage data
+const costData = await costManager.getCostAndUsage({
+  startDate: new Date('2024-01-01'),
+  endDate: new Date('2024-01-31'),
+  granularity: 'MONTHLY'
+});
+
+// Get cost forecast
+const forecast = await costManager.getCostForecast({
+  startDate: new Date('2024-02-01'),
+  endDate: new Date('2024-02-29')
+});
+
+// Get cost optimization recommendations
+const recommendations = await costManager.getCostOptimizationRecommendations({
+  startDate: new Date('2024-01-01'),
+  endDate: new Date('2024-01-31')
+});
+
+// Calculate service-specific costs
+const ec2Cost = await costManager.calculateServiceCost('AmazonEC2', {
+  startDate: new Date('2024-01-01'),
+  endDate: new Date('2024-01-31')
+});
+```
+
+### 7. DynamoDB Utilities
+
+**Use Case**: Cost-optimized DynamoDB operations with batch processing, performance analysis, and cost monitoring.
+
+```typescript
+import { createDynamoDBUtils } from 'aws-all-in-one/dynamodb-utils';
+
+const dynamoDB = createDynamoDBUtils({
+  tableName: 'my-table',
+  region: 'us-east-1'
+});
+
+// Batch operations for cost efficiency
+await dynamoDB.batchWrite([
+  { put: { id: '1', data: 'value1' } },
+  { put: { id: '2', data: 'value2' } },
+  { delete: { id: '3' } }
+]);
+
+// Cost-optimized queries
+const items = await dynamoDB.query('id = :id', { ':id': '1' }, {
+  useGSI: true,
+  maxCost: 0.01
+});
+
+// Get cost analysis
+const costAnalysis = await dynamoDB.getCostAnalysis();
+
+// Performance optimization recommendations
+const optimization = await dynamoDB.optimizeQueryPerformance('id = :id', { ':id': '1' });
+```
+
 // Helper utilities
 const uniqueName = S3Helpers.generateUniqueFilename('document.pdf', 'uploads');
 const isValidBucket = S3Helpers.validateBucketName('my-bucket-123');
@@ -220,6 +287,14 @@ const output = await ExecutionPatterns.retryOnFailure(sfn, 'my-execution', { inp
 **Scenario**: Generate least-privilege IAM policies programmatically for different environments and services.
 **Functions**: `PolicyBuilder`, `PolicyTemplates`
 
+### Cost Optimization & Monitoring
+**Scenario**: Monitor AWS costs, detect anomalies, and get automated recommendations for cost savings.
+**Functions**: `costManager`, `getCostOptimizationRecommendations()`
+
+### DynamoDB Performance & Cost Management
+**Scenario**: Optimize DynamoDB operations with batch processing, cost analysis, and performance recommendations.
+**Functions**: `createDynamoDBUtils()`, `optimizeQueryPerformance()`
+
 ## 🔐 Security Notes
 
 ### Best Practices
@@ -294,6 +369,52 @@ interface S3NotificationSetup {
   topicArn: string;
   subscriptionArn: string;
   response: any;
+}
+```
+
+### Cost Manager
+
+```typescript
+interface CostAnalysisOptions {
+  startDate: Date;
+  endDate: Date;
+  granularity?: 'DAILY' | 'MONTHLY' | 'HOURLY';
+  metrics?: string[];
+  groupBy?: Array<{ Type: string; Key?: string }>;
+  filter?: any;
+}
+
+class CostManager {
+  getCostAndUsage(options: CostAnalysisOptions): Promise<CostData>;
+  getCostForecast(options: CostAnalysisOptions): Promise<CostForecast>;
+  getAnomalies(options: CostAnalysisOptions): Promise<AnomalyData[]>;
+  getCostOptimizationRecommendations(options: CostAnalysisOptions): Promise<CostOptimizationRecommendation[]>;
+  calculateServiceCost(service: string, options: CostAnalysisOptions): Promise<number>;
+}
+```
+
+### DynamoDB Utils
+
+```typescript
+interface DynamoDBOptions {
+  tableName: string;
+  region?: string;
+  dynamoDBClient?: DynamoDBClient;
+}
+
+interface CostOptimizedQueryOptions {
+  maxCost?: number;
+  useGSI?: boolean;
+  preferConsistentRead?: boolean;
+}
+
+class DynamoDBUtils {
+  putItem(item: Record<string, any>): Promise<void>;
+  getItem(key: Record<string, any>): Promise<Record<string, any> | null>;
+  query(keyConditionExpression: string, expressionAttributeValues: Record<string, any>, options?: CostOptimizedQueryOptions): Promise<Record<string, any>[]>;
+  batchWrite(items: Array<{ put?: Record<string, any>; delete?: Record<string, any> }>): Promise<void>;
+  getCostAnalysis(): Promise<CostAnalysis>;
+  optimizeQueryPerformance(keyConditionExpression: string, expressionAttributeValues: Record<string, any>): Promise<{ optimizedExpression: string; estimatedCost: number; recommendations: string[] }>;
 }
 
 class S3Utils {
