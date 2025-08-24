@@ -1,6 +1,6 @@
 {
   "name": "aws-all-in-one",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "A comprehensive toolkit for AWS operations including multi-region clients, IAM policy builder, assume role, S3 deployment, KMS utilities, messaging, Step Functions helpers, cost management, and DynamoDB utilities",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

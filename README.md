@@ -22,6 +22,8 @@ A comprehensive toolkit for AWS operations including multi-region clients, IAM p
 - 🚀 **Lambda Manager** - Complete Lambda function lifecycle management with best practices
 - 🚀 **Lambda Deployer** - Production-ready deployment strategies (blue-green, canary) with CloudWatch scheduling and retry logic
 - 🔒 **Lambda Security** - Automated security scanning, IAM role generation, and compliance
+- 🔑 **Credentials Manager** - Configure AWS credentials programmatically without external CLI
+- 📧 **SNS Email Manager** - Automatic email subscriptions and verification for SNS topics
 - 🪶 **Lightweight** - Minimal package size with no unnecessary dependencies
 - 🚀 **Modern** - Written in TypeScript, transpiles to ESM + CommonJS
 - 🧪 **Testable** - Fully tested with Jest and mocked AWS SDK
@@ -29,7 +31,7 @@ A comprehensive toolkit for AWS operations including multi-region clients, IAM p
 ## 📦 Installation
 
 ```bash
-npm install aws-
+npm install aws-all-in-one
 ```
 
 ```bash
@@ -147,8 +149,15 @@ const url = await s3Utils.getPreSignedUrl('file-key', s3Details, 7200);
 // Setup complete S3 notifications (SNS + IAM + bucket config)
 const setup = await s3Utils.setupS3Notifications(s3Details);
 
+// Setup S3 notifications with automatic email subscriptions
+const notificationSetup = await s3Utils.setupS3NotificationsWithEmails(
+  s3Details,
+  ['admin@company.com', 'dev@company.com', 'support@company.com']
+);
+
 // Get IAM username
 const username = await s3Utils.getIamUserName(s3Details);
+```
 
 ### 6. Cost Manager
 
@@ -213,7 +222,6 @@ const costAnalysis = await dynamoDB.getCostAnalysis();
 
 // Performance optimization recommendations
 const optimization = await dynamoDB.optimizeQueryPerformance('id = :id', { ':id': '1' });
-```
 
 // Helper utilities
 const uniqueName = S3Helpers.generateUniqueFilename('document.pdf', 'uploads');
@@ -310,6 +318,59 @@ const result = await sfn.executeAndWait('my-execution', { input: 'data' });
 const output = await ExecutionPatterns.retryOnFailure(sfn, 'my-execution', { input: 'data' }, 3);
 ```
 
+### 10. AWS Credentials Management
+
+**Use Case**: Configure AWS credentials programmatically without external CLI or environment variables.
+
+```typescript
+import { CredentialsManager } from 'aws-all-in-one/credentials-manager';
+
+// Configure credentials directly in your code
+const credentials = {
+  accessKeyId: 'YOUR_ACCESS_KEY',
+  secretAccessKey: 'YOUR_SECRET_KEY',
+  region: 'us-east-1'
+};
+
+// Test and configure credentials
+const isValid = await CredentialsManager.testAndConfigure(credentials);
+if (isValid) {
+  console.log('✅ Credentials configured successfully!');
+}
+
+// Check which credentials are currently active
+const current = await CredentialsManager.getCurrentCredentials();
+console.log(`Using credentials from: ${current.source}`);
+
+// Test current credentials without changing them
+const status = await CredentialsManager.testCurrentCredentials();
+```
+
+### 11. SNS Email Management
+
+**Use Case**: Automatically subscribe email addresses to SNS topics and manage subscriptions.
+
+```typescript
+import { SNSEmailManager } from 'aws-all-in-one/sns-email-manager';
+
+// Subscribe multiple emails to an SNS topic
+const subscriptions = await SNSEmailManager.subscribeEmails({
+  topicArn: 'arn:aws:sns:us-east-1:123456789012:my-topic',
+  emailAddresses: ['admin@company.com', 'dev@company.com'],
+  protocol: 'email'
+});
+
+// Check subscription status
+for (const subscription of subscriptions) {
+  const status = await SNSEmailManager.checkSubscriptionStatus(subscription.subscriptionArn);
+  console.log(`${subscription.email}: ${status.status}`);
+}
+
+// List all subscriptions for a topic
+const allSubscriptions = await SNSEmailManager.listTopicSubscriptions(topicArn);
+console.log('All email subscriptions:', allSubscriptions);
+```
+
 ## ⚡ Use Cases
 
 ### Multi-Account Infrastructure Management
@@ -335,6 +396,14 @@ const output = await ExecutionPatterns.retryOnFailure(sfn, 'my-execution', { inp
 ### DynamoDB Performance & Cost Management
 **Scenario**: Optimize DynamoDB operations with batch processing, cost analysis, and performance recommendations.
 **Functions**: `createDynamoDBUtils()`, `optimizeQueryPerformance()`
+
+### AWS Credentials Management
+**Scenario**: Configure AWS credentials programmatically without external CLI or environment variables.
+**Functions**: `CredentialsManager.testAndConfigure()`, `CredentialsManager.getCurrentCredentials()`
+
+### SNS Email Notifications
+**Scenario**: Automatically subscribe multiple email addresses to SNS topics for notifications.
+**Functions**: `SNSEmailManager.subscribeEmails()`, `setupS3NotificationsWithEmails()`
 
 ## 🔐 Security Notes
 
@@ -467,6 +536,7 @@ class S3Utils {
   getIamUserName(s3Details: S3Details): Promise<string>;
   getSNSSubscriptionAttributes(subscriptionArn: string, s3Details: S3Details, logger?: any): Promise<any>;
   getSubscriptionArnByEndpoint(topicArn: string, s3Details: S3Details, endpoint: string, logger?: any): Promise<string | undefined>;
+  setupS3NotificationsWithEmails(s3Details: S3Details, emailAddresses: string[]): Promise<S3NotificationSetup & { emailSubscriptions: any[] }>;
 }
 
 // Helper functions
@@ -506,6 +576,58 @@ class StepFunctionsHelper {
   executeAndWait(name: string, input: ExecutionInput): Promise<ExecutionStatus>;
   getExecutionStatus(executionArn: string): Promise<ExecutionStatus>;
   listExecutions(options?: { maxResults?: number; statusFilter?: string }): Promise<ExecutionStatus[]>;
+}
+```
+
+### Credentials Manager
+
+```typescript
+interface AWSCredentials {
+  accessKeyId: string;
+  secretAccessKey: string;
+  region?: string;
+  sessionToken?: string;
+}
+
+interface CredentialValidationResult {
+  isValid: boolean;
+  accountId?: string;
+  userId?: string;
+  arn?: string;
+  errors: string[];
+}
+
+class CredentialsManager {
+  static configureCredentials(credentials: AWSCredentials): void;
+  static validateCredentials(credentials?: AWSCredentials): Promise<CredentialValidationResult>;
+  static testAndConfigure(credentials: AWSCredentials): Promise<boolean>;
+  static getCurrentCredentials(): Promise<{ source: 'environment' | 'cli' | 'iam-role' | 'none'; accountId?: string; userId?: string; region?: string }>;
+  static testCurrentCredentials(): Promise<CredentialValidationResult>;
+}
+```
+
+### SNS Email Manager
+
+```typescript
+interface SNSSubscriptionConfig {
+  topicArn: string;
+  emailAddresses: string[];
+  protocol: 'email' | 'email-json';
+  autoConfirm?: boolean;
+}
+
+interface SubscriptionResult {
+  email: string;
+  subscriptionArn: string;
+  status: 'pending' | 'confirmed' | 'failed';
+  error?: string;
+}
+
+class SNSEmailManager {
+  static subscribeEmails(config: SNSSubscriptionConfig, awsCredentials?: any): Promise<SubscriptionResult[]>;
+  static checkSubscriptionStatus(subscriptionArn: string, awsCredentials?: any): Promise<{ status: string; confirmed: boolean }>;
+  static resendConfirmation(subscriptionArn: string, awsCredentials?: any): Promise<void>;
+  static listTopicSubscriptions(topicArn: string, awsCredentials?: any): Promise<Array<{ email: string; status: string; subscriptionArn: string }>>;
 }
 ```
 

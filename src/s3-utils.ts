@@ -456,6 +456,31 @@ export class S3Utils {
   }
 
   /**
+   * Setup S3 notifications with automatic email subscriptions
+   */
+  async setupS3NotificationsWithEmails(
+    s3Details: S3Details, 
+    emailAddresses: string[]
+  ): Promise<S3NotificationSetup & { emailSubscriptions: any[] }> {
+    
+    // First setup basic notifications using existing function
+    const basicSetup = await this.setupS3Notifications(s3Details);
+    
+    // Then subscribe emails using the SNS email manager
+    const { SNSEmailManager } = require('./sns-email-manager');
+    const emailSubscriptions = await SNSEmailManager.subscribeEmails({
+      topicArn: basicSetup.topicArn,
+      emailAddresses,
+      protocol: 'email'
+    });
+
+    return {
+      ...basicSetup,
+      emailSubscriptions
+    };
+  }
+
+  /**
    * Generate custom filename with timestamp
    */
   private generateCustomFileName(originalName: string): string {

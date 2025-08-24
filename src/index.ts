@@ -9,6 +9,8 @@ export * from './step-functions';
 export * from './lambda-manager';
 export * from './lambda-deployer';
 export * from './lambda-security';
+export * from './credentials-manager';
+export * from './sns-email-manager';
 
 export const getCostManager = async () => {
   const { CostManager } = await import('./cost-manager');
@@ -40,6 +42,8 @@ export type { MultiRegionConfig, RegionConfig } from './multi-region';
 export type { PolicyDocument, PolicyStatement } from './policy-builder';
 export type { S3DeployerOptions, DeployResult } from './s3-deployer';
 export type { S3Details, S3NotificationSetup, UploadOptions, S3UtilsOptions } from './s3-utils';
+export type { AWSCredentials, CredentialValidationResult } from './credentials-manager';
+export type { SNSSubscriptionConfig, SubscriptionResult } from './sns-email-manager';
 export type { KMSOptions, EncryptionResult } from './kms-utils';
 export type { MessageOptions, PublishResult } from './messaging';
 export type { StepFunctionOptions, ExecutionResult } from './step-functions';
