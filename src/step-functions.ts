@@ -65,12 +65,12 @@ export class StepFunctionsHelper {
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-                         const command = new StartExecutionCommand({
-                   stateMachineArn: this.options.stateMachineArn,
-                   name: name,
-                   input: JSON.stringify(input),
-                   traceHeader: traceHeader,
-                 });
+            const command = new StartExecutionCommand({
+              stateMachineArn: this.options.stateMachineArn,
+              name: name,
+              input: JSON.stringify(input),
+              traceHeader: traceHeader,
+            });
 
         const response = await this.sfnClient.send(command);
 
@@ -100,9 +100,9 @@ export class StepFunctionsHelper {
    * Get execution status
    */
   async getExecutionStatus(executionArn: string): Promise<ExecutionStatus> {
-                   const command = new DescribeExecutionCommand({
-                 executionArn: executionArn,
-               });
+      const command = new DescribeExecutionCommand({
+      executionArn: executionArn,
+    });
 
     const response = await this.sfnClient.send(command);
 
@@ -168,29 +168,29 @@ export class StepFunctionsHelper {
   ): Promise<ExecutionStatus[]> {
     const { maxResults = 100, statusFilter } = options;
 
-                   const command = new ListExecutionsCommand({
-                 stateMachineArn: this.options.stateMachineArn,
-                 maxResults: maxResults,
-                 statusFilter: statusFilter,
-               });
+    const command = new ListExecutionsCommand({
+     stateMachineArn: this.options.stateMachineArn,
+     maxResults: maxResults,
+     statusFilter: statusFilter,
+    });
 
     const response = await this.sfnClient.send(command);
     const executions: ExecutionStatus[] = [];
 
     for (const execution of response.executions || []) {
       if (execution.executionArn && execution.stateMachineArn && execution.name && execution.status) {
-                         executions.push({
-                   executionArn: execution.executionArn,
-                   stateMachineArn: execution.stateMachineArn,
-                   name: execution.name,
-                   status: execution.status as ExecutionStatus['status'],
-                   startDate: execution.startDate!,
-                   stopDate: execution.stopDate,
-                   input: (execution as any).input,
-                   output: (execution as any).output,
-                   error: (execution as any).error,
-                   cause: (execution as any).cause,
-                 });
+        executions.push({
+          executionArn: execution.executionArn,
+          stateMachineArn: execution.stateMachineArn,
+          name: execution.name,
+          status: execution.status as ExecutionStatus['status'],
+          startDate: execution.startDate!,
+          stopDate: execution.stopDate,
+          input: (execution as any).input,
+          output: (execution as any).output,
+          error: (execution as any).error,
+          cause: (execution as any).cause,
+        });
       }
     }
 
@@ -205,15 +205,14 @@ export class StepFunctionsHelper {
     cause?: string
   ): Promise<boolean> {
     try {
-                     const command = new StopExecutionCommand({
-                 executionArn: executionArn,
-                 cause: cause,
-               });
+        const command = new StopExecutionCommand({
+        executionArn: executionArn,
+        cause: cause,
+      });
 
       await this.sfnClient.send(command);
       return true;
-    } catch (error) {
-      // ✅ SAFE: Silent failure - no sensitive info exposure
+    } catch {
       return false;
     }
   }
@@ -247,8 +246,7 @@ export class StepFunctionsHelper {
       }
       
       return null;
-    } catch (error) {
-      // ✅ SAFE: Silent failure - no sensitive info exposure
+    } catch {
       return null;
     }
   }
@@ -302,7 +300,6 @@ export const ExecutionPatterns = {
           throw error;
         }
         
-        // ✅ SAFE: Silent retry - no sensitive info exposure
         await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
       }
     }
